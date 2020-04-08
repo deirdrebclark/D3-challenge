@@ -53,8 +53,8 @@ function makeResponsive() {
             data.obesityLow = +data.obesityLow;
             data.obesityHigh = +data.obesityHigh;
             data.smokes = +data.smoke;
-            data.smokesLow = +data.smokesLow
-            data.smokesHigh = +data.smokesHigh
+            data.smokesLow = +data.smokesLow;
+            data.smokesHigh = +data.smokesHigh;
          });
 
         // Create scales
@@ -69,7 +69,7 @@ function makeResponsive() {
 
         // Create axes
         var xAxis = d3.axisBottom(xLinearScale);
-        var yAxis = d3.axisLeft(yLinearScale).ticks(11);
+        var yAxis = d3.axisLeft(yLinearScale);
 
         // Append axes
         chartGroup.append('g')
@@ -78,25 +78,29 @@ function makeResponsive() {
 
         chartGroup.append('g')
             .call(yAxis);
-
+        
+        
         // Append circles 
         var circlesGroup = chartGroup.selectAll('circle')
             .data(economyData)
             .enter()
             .append('circle')
-            .attr('cx', d => xLinearScale(d.poverty))
+            .attr('cx', d => xLinearScale(d.poverty + d.povertyMoe))
             .attr('cy', d => yLinearScale(d.healthcare))
             .attr('r', 10)
-            .classed('stateCircle', true)
-            .attr('opacity', '0.5');
-        
-        // Add states to circles
-        chartGroup.selectAll('circle')
-            .data(economyData)
-            .append('text')
-            .classed('stateText', true)
-            .text(d => d.abbr);
-         
+            .classed('stateCircle', true);
+
+            var circleLabels = chartGroup.selectAll(null)
+                .data(economyData)
+                .enter()
+                .append("text");
+
+            circleLabels
+                .attr("x", d => xLinearScale(d.poverty + d.povertyMoe))
+                .attr("y", d => yLinearScale(d.healthcare))
+                .text(d => d.abbr)
+                .classed('stateText', true);
+               
         // Append x axis
         chartGroup.append('text')
             .attr('transform', `translate(${chartWidth / 2}, ${chartHeight + 20})`)
